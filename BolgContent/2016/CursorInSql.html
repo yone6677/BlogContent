@@ -1,0 +1,118 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <link href="../BlogStyle.css" rel="stylesheet" />
+</head>
+<body>
+    <ol>
+        <li>
+            首先介绍一下Cursor，<a href="https://msdn.microsoft.com/en-us/library/ms180169.aspx" target="_blank">msdn原文</a>。
+            <ol>
+                <li>
+                    <p>
+                        在C#中，当我们需要遍历一个数据集时，可以使用 foreach(){ &nbsp; }。这个时候，我们的操作对象是单一数据，而不是整个结果集。当我们想在后台数据库中直接面向单一数据进行操作时（比如，对一个查询结果集中的每一条记录进行不同的操作），我们需要用到Cursor。它能够将一个结果集转换为一个可遍历的集合（sql 默认情况下是面向数据集的，而不是单一记录，我们只能对整个数据集操作）。我们把cursor叫做服务端游标。
+                    </p>
+                </li>
+                <li>
+                    <p>cursor的声明语法分为两类：1 基于Iso 标准 2 基于Transact-SQL . 这里我只介绍Transact-SQL.</p>
+                    <p>
+<pre>
+DECLARE cursor_name CURSOR [ LOCAL | GLOBAL ] 
+     [ FORWARD_ONLY | SCROLL ] 
+     [ STATIC | KEYSET | DYNAMIC | FAST_FORWARD ] 
+     [ READ_ONLY | SCROLL_LOCKS | OPTIMISTIC ] 
+     [ TYPE_WARNING ] 
+     FOR select_statement 
+     [ FOR UPDATE [ OF column_name [ ,...n ] ] ]
+[;]</pre>
+                    </p>
+                </li>
+                <li>
+                    <p>
+                        学习Cursor的参数
+                    </p>
+                    <p>
+                        <ol>
+                            <li>
+                                cursor_name:
+                                <br /> cursor的名称，需要注意的是必须遵循<strong>标识规范</strong>
+                            </li>
+                            <li>
+                                LOCAL:
+                                <br />限定cursor的作用域：只在声明它所在的batch、stored procedure、trigger中有效。当batch、stored procedure、trigger结束时，其作用域内的cursor会被隐式释放掉。但是，如果我们使用OUTPUT，将局部cursor传递给外部的变量，那么即使batch、stored procedure、trigger已经结束，该cursor依然存在。这个时候，当引用cursor的变量被释放掉或者超出该引用变量的作用域时，cursor会被隐式释放掉。也就是说，通过OUTPUT我们可以扩大cursor的作用域。
+                            </li>
+                            <li>
+                                GLOBAL:
+                                <br />指定cursor的作用域为全局。任何stored procedure、batch都可以引用该cursor。只有断开连接，该cursor才会被释放。
+                                <br />默认值可通过数据库属性 -> option ->cursor 指定。
+                            </li>
+                            <li>
+                                FORWARD_ONLY:
+                                <br />1. 指定游标只能从第一行滚动到最后一行。这种情况下只有<span class="red">Fetch Next </span>提取项可用。
+                                <br />2. 当没有指定STATIC、KEYSET 和 DYNAMIC时，默认为Forward_Only,否则为Scroll
+                                <br />3. 当指定了Forward_Only时，默认为 DYNAMIC。
+                            </li>
+                            <li>
+                                SCROLL:
+                                <br /> 制定是否所有的提取操作（FIRST、LAST、PRIOR、NEXT、RELATIVE、ABSOLUTE）都可用。scrll跟fast_forward冲突，不可同用。
+                            </li>
+                            <li>
+                                STATIC:
+                                <ol>
+                                    <li>
+                                        会在tempdb中创建副本。
+                                    </li>
+                                    <li>
+                                        所有的提取操作都来自于临时表而不是基表。
+                                    </li>
+                                    <li>不允许对cursor进行更改.<span class="red">(Where Current Of)</span></li>
+                                </ol>
+                            </li>
+                            <li>
+                                KEYSET:
+                                <ol>
+                                    <li>
+                                        打开游标时，行的身份和顺序会被固定，对行进行唯一标识的键集保存在tempdb中的keyset
+                                    </li>
+                                    <li>
+                                       对基表非键值所做的更改会被映射到cursor中<span class="red">如果基表没有唯一键，那么cursor是STATIC的，而不是keyset</span>
+                                    </li>
+                                    <li>对基表的插入操作不会映射到cursor</li>
+                                    <li>对基表的删除操作会更新临时表的键集中对应的值为null。（并没有删除，只是为null）</li>
+                                    <li>对基表的键值更新操作，等同于删除添加操作。cursor中的对应位置为null</li>
+                                    <li>通过<span class="red">Where Current Of</span>修改，不管是否是唯一键，都可以映射</li>
+                                </ol>
+                            </li>
+                            <li>
+                                select_statement:
+                                <br /> 查询语句。不能使用关键字 Into、For Browse。
+                            </li>
+                            <li>
+                                read only:
+                                <br />禁用游标的更新功能。<span style="color:red">（我的测试表明read_only无效）</span>
+                            </li>
+                </li>
+            </ol>
+
+            </p>
+        </li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+    </ol>
+    </li>
+
+
+
+
+    <p></p>
+    <p></p>
+    <p></p>
+    <li>2.接着介绍fetch</li>
+    </ol>
+</body>
+</html>
