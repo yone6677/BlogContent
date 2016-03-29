@@ -1,0 +1,45 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <link href="../BlogStyle.css" rel="stylesheet" />
+</head>
+<body>
+    <h1>使用 X-UA-Compatible是指IE浏览器的兼容模式</h1>
+    <ol>
+        <li><a href="http://www.cnblogs.com/nidilzhang/archive/2010/01/09/1642887.html">参考</a></li>
+        <li>
+            <h4>设置兼容性有3个办法</h4>
+            <ol>
+                <li>
+                    通过页面的meta标签<br />
+                    <p>&lt;meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" /></p>
+                </li>
+                <li>
+                    在iis中设置<br />
+                    打开IIS，点击要设置的网站。在右边的选项中选择<b>HTTP相应表头</b>，点击<b>添加</b>，名称输入“X-UA-Compatible”，值输入“IE=10”,即可将浏览器兼容性设置为IE10
+                </li>
+                <li>
+                    在配置文件中设置<br />
+                    <p>添加以下节点</p>
+                    &lt;configuration><br />
+                    &lt; system.webserver><br />
+                    &lt;httpprotocol><br />
+                    &lt;customheaders><br />
+                    &lt;clear /><br />
+                    &lt;add name="X-UA-Compatible" value="IE=7" /><br />
+                    &lt;/customheaders><br />
+                    &lt;/httpprotocol><br />
+                    &lt;/system.webserver><br />
+                    &lt;/configuration ><br />
+                </li>
+            </ol>
+        </li>
+        <li>通过js获取当前兼容模式<br />
+            <b>document.documentMode</b>
+        </li>
+        <li>作用：硬性规定IE的默认浏览模式，无需手动F12设置</li>
+    </ol>
+</body>
+</html>
